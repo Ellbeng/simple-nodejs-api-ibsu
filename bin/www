@@ -6,13 +6,19 @@
 
 var app = require('../app');
 var debug = require('debug')('simple-nodejs-api-ibsu:server');
+var fs = require('fs');
 var http = require('http');
+const dotenv = require('dotenv');
+const configData = fs.readFileSync('.env');
+const buf = Buffer.from(configData);
+const config = dotenv.parse(buf);
+const mongoose = require('mongoose');
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || config.PORT);
 app.set('port', port);
 
 /**
@@ -24,10 +30,11 @@ var server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+function startServer() {
+  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
+}
 
 /**
  * Normalize a port into a number, string, or false.
@@ -87,4 +94,21 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+  console.log("Start Server on", bind)
 }
+
+//Connect to DB and after that start server
+function connectToDB() {
+  mongoose.connect(`${config.MONGO_URL}/${config.DB}`)
+    .then(() => {
+      startServer()
+    })
+    .catch(error => {
+      console.error("ERROR_ON_CONNECTIN_DB", error);
+      setTimeout(() => {
+        connectToDB();
+      }, 2000)
+    })
+}
+
+connectToDB();
