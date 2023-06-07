@@ -11,6 +11,7 @@ const studentSchema = mongoose.Schema({
     code: { type: String }
   }]
 }, {
+  collection: 'students',
   timestamps: true,
   writeConcern: {
     w: 'majority',
