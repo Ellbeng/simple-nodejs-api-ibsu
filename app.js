@@ -20,6 +20,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+const requestTimeAndLog = (req, res, next) => {
+  console.log("REQUEST_DATA", req.params, req.query, req.body);
+  req.time = new Date();
+  next();
+}
+
+app.use(requestTimeAndLog);
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/students', studentRouter);
