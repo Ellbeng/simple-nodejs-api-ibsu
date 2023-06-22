@@ -1,31 +1,23 @@
-const StudentModel = require('../models/student');
+const ProductModel = require('../models/product');
 const ApiResponse = require('../utils/ApiResponse');
 
 module.exports = {
 
-  getAllStudents: async (req, res) => {
+  getAllProducts: async (req, res) => {
     try {
-      // StudentModel.find({})
-      //   .then(students => {
-      //     res.status(200).json({ students, success: true });
-      //   })
-      //   .catch(error => {
-      //     res.status(500).json({ error, success: false });
-      //   });
-
-      const students = await StudentModel.find({});
-      ApiResponse.success(res, students);
+     const products = await ProductModel.find({});
+      ApiResponse.success(res, products);
     } catch (error) {
-      ApiResponse.failure(res, error, 'error_on_getAllStudents');
+      ApiResponse.failure(res, error, 'error_on_getAllProducts');
     }
   },
 
-  getStudent: async (req, res) => {
+  getProduct: async (req, res) => {
     try {
-      const student = await StudentModel.findById(req.params.id);
-      ApiResponse.success(res, student);
+      const product = await ProductModel.findById(req.params.id);
+      ApiResponse.success(res, product);
     } catch (error) {
-      ApiResponse.failure(res, error, 'error_on_getStudent');
+      ApiResponse.failure(res, error, 'error_on_getProduct');
     }
   },
 
@@ -77,10 +69,14 @@ module.exports = {
       const queryForSearch = {};
       if (req.query.searchText) {
         queryForSearch.$or = [{
-          name: new RegExp(`.*${req.query.searchText}.*`, "i")
+          firstName: new RegExp(`.*${req.query.searchText}.*`, "i")
+        }, {
+          lastName: new RegExp(`.*${req.query.searchText}.*`, "i")
+        }, {
+          studentCode: new RegExp(`.*${req.query.searchText}.*`, "i")
         }]
       }
-      const result = await ProductModel.find(queryForSearch)
+      const result = await StudentModel.find(queryForSearch)
         .sort({ createdAt: 1 })
         .skip(skip)
         .limit(limit)
